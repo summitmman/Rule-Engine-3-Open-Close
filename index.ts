@@ -120,3 +120,11 @@ const emiAmountRuleEngine: RuleEngine<Config> = new RuleEngine<Config>(
 
 let output: Config = emiAmountRuleEngine.runOn(testData);
 console.log('Final config to be used', output);
+
+appDiv.innerHTML = `
+  ${appDiv.innerHTML}
+  <br/>
+  <div><b>Final Configuration</b>: ${JSON.stringify(output)}</div>
+  <br/>
+  <div><b>Rule JSON</b>: ${JSON.stringify(rules)}</div>
+`;
