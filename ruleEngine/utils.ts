@@ -75,16 +75,16 @@ const runCondition = <T>(
   return final;
 };
 
-const runResult = <T>(
-  result: ResultFunction<T> | T,
-  dataSource: any,
-  id?: string
-): T => {
-  if (typeof result === 'function') {
-    return (result as ResultFunction<T>)(dataSource, id);
-  }
-  return result;
-};
+// const runResult = <T>(
+//   result: ResultFunction<T> | T,
+//   dataSource: any,
+//   id?: string
+// ): T => {
+//   if (typeof result === 'function') {
+//     return (result as ResultFunction<T>)(dataSource, id);
+//   }
+//   return result;
+// };
 
 export const runRules = <T>(
   dataSource: any,
@@ -107,17 +107,22 @@ export const runRules = <T>(
     // if rule is of type default, keep it for later
     if (rule.type === ConditionType.Default) {
       defaultRule = rule as IDefault<T>;
-    } else {
-      // for all other rules, run their conditions
-      const result = runCondition<T>(dataSource, rule, conditionHelpers);
-      if (result) {
-        // if matching config has nesting, run nesting
-        if (rule.next) {
-          return runRules(dataSource, rule.next, conditionHelpers);
+      continue;
+    }
+    // for all other rules, run their conditions
+    const result = runCondition<T>(dataSource, rule, conditionHelpers);
+    if (result) {
+      // if matching config has nesting, run nesting
+      if (rule.next) {
+        const nestedResult = runRules(dataSource, rule.next, conditionHelpers);
+        if (nestedResult == null) {
+          continue;
+        } else {
+          return nestedResult;
         }
-        // else we have found matching rule and can return the result
-        return rule.result;
       }
+      // else we have found matching rule and can return the result
+      return rule.result;
     }
   }
 
